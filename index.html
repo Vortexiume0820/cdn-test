@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CDN 源站測試頁</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --card: #1a1d27;
+      --line: #2a2e3a;
+      --text: #e6e8ee;
+      --muted: #9aa0ae;
+      --accent: #5dcaa5;
+      --accent2: #85b7eb;
+      --warn: #efb45c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      line-height: 1.6;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      max-width: 560px;
+      width: 100%;
+      padding: 32px;
+    }
+    h1 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+    .sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+    .badge {
+      display: inline-block;
+      background: rgba(93,202,165,0.15);
+      color: var(--accent);
+      border: 1px solid rgba(93,202,165,0.4);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      margin-bottom: 24px;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+    .row:last-child { border-bottom: none; }
+    .row .label { color: var(--muted); }
+    .row .value { font-family: ui-monospace, "SF Mono", Menlo, monospace; color: var(--text); text-align: right; }
+    .big { font-size: 32px; font-weight: 700; color: var(--accent2); }
+    .hint {
+      margin-top: 24px;
+      padding: 16px;
+      background: rgba(133,183,235,0.08);
+      border: 1px solid rgba(133,183,235,0.2);
+      border-radius: 12px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .hint b { color: var(--text); font-weight: 600; }
+    .tag { color: var(--warn); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge">● 這個頁面來自你的「源站」</div>
+    <h1>CDN 源站測試頁</h1>
+    <p class="sub">如果你透過加速域名看到這一頁,代表 CNAME → 回源 → 快取 整條已經打通。</p>
+
+    <div class="row">
+      <span class="label">你造訪的網址</span>
+      <span class="value" id="host">—</span>
+    </div>
+    <div class="row">
+      <span class="label">頁面產生時間</span>
+      <span class="value" id="buildtime">2026-09-30</span>
+    </div>
+    <div class="row">
+      <span class="label">你這次載入的時間</span>
+      <span class="value" id="loadtime">—</span>
+    </div>
+    <div class="row">
+      <span class="label">你重整了幾次</span>
+      <span class="value big" id="count">1</span>
+    </div>
+
+    <div class="hint">
+      <b>怎麼用它觀察快取:</b><br>
+      1. 先用瀏覽器直接開你的<span class="tag">源站網址</span>,確認看得到這頁。<br>
+      2. 在 BytePlus 設好源站 + 綁定加速域名 + 改 CNAME。<br>
+      3. 改開你的<span class="tag">加速域名</span>——若看到同一頁,代表回源成功。<br>
+      4. 開瀏覽器開發者工具(F12)→ Network → 點這個請求,看回應標頭裡的 <b>X-Cache</b> 或類似欄位:<br>
+      &nbsp;&nbsp;• <b>MISS</b> = 這次是回源抓的<br>
+      &nbsp;&nbsp;• <b>HIT</b> = 這次直接由 CDN 快取回(第二次之後應該變 HIT)
+    </div>
+  </div>
+
+  <script>
+    // 顯示目前網址的 host(方便分辨你在看源站還是加速域名)
+    document.getElementById('host').textContent = location.host || '(本機檔案)';
+
+    // 顯示這次載入的時間(每次重整都會變 → 證明頁面有被重新取得)
+    document.getElementById('loadtime').textContent = new Date().toLocaleString('zh-TW');
+
+    // 用 localStorage 記錄「這個瀏覽器」重整了幾次(僅本機計數,方便你自己觀察)
+    try {
+      var n = parseInt(localStorage.getItem('cdn_test_count') || '0', 10) + 1;
+      localStorage.setItem('cdn_test_count', String(n));
+      document.getElementById('count').textContent = n;
+    } catch (e) {
+      document.getElementById('count').textContent = '1';
+    }
+  </script>
+</body>
+</html>
