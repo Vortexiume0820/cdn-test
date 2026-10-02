@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>關於 — CDN 測試頁</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --card: #1a1d27;
+      --line: #2a2e3a;
+      --text: #e6e8ee;
+      --muted: #9aa0ae;
+      --accent: #85b7eb;
+      --accent2: #5dcaa5;
+      --warn: #efb45c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      line-height: 1.6;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      max-width: 560px;
+      width: 100%;
+      padding: 32px;
+    }
+    h1 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+    .sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+    .badge {
+      display: inline-block;
+      background: rgba(133,183,235,0.15);
+      color: var(--accent);
+      border: 1px solid rgba(133,183,235,0.4);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      margin-bottom: 24px;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+    .row:last-child { border-bottom: none; }
+    .row .label { color: var(--muted); }
+    .row .value { font-family: ui-monospace, "SF Mono", Menlo, monospace; color: var(--text); text-align: right; }
+    p.body { font-size: 14px; color: var(--muted); margin: 20px 0; }
+    .nav { margin-top: 24px; display: flex; gap: 12px; }
+    .btn {
+      display: inline-block;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 14px;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      color: var(--text);
+      transition: border-color .15s;
+    }
+    .btn:hover { border-color: var(--accent); }
+    .btn.primary { background: rgba(93,202,165,0.15); border-color: rgba(93,202,165,0.4); color: var(--accent2); }
+    .hint {
+      margin-top: 24px;
+      padding: 16px;
+      background: rgba(239,180,92,0.08);
+      border: 1px solid rgba(239,180,92,0.2);
+      border-radius: 12px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .hint b { color: var(--text); font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge">● 你現在在「about.html」這一頁</div>
+    <h1>關於這個測試</h1>
+    <p class="sub">如果你是從首頁點連結來到這裡,而且網址還停在你的加速域名上,代表多頁連結 + CDN 都正常運作。</p>
+
+    <p class="body">
+      這是一個用來練習 BytePlus CDN 的測試頁。它和首頁放在同一個資料夾,
+      透過相對連結互相連接,所以點來點去都會停在你自己的加速域名底下、持續走 CDN,
+      不會被踢回 GitHub 原站。
+    </p>
+
+    <div class="row">
+      <span class="label">你造訪的網址</span>
+      <span class="value" id="host">—</span>
+    </div>
+    <div class="row">
+      <span class="label">目前路徑</span>
+      <span class="value" id="path">—</span>
+    </div>
+    <div class="row">
+      <span class="label">這次載入的時間</span>
+      <span class="value" id="loadtime">—</span>
+    </div>
+
+    <div class="nav">
+      <a class="btn primary" href="index.html">← 回首頁</a>
+      <a class="btn" href="about.html">重新載入本頁</a>
+    </div>
+
+    <div class="hint">
+      <b>觀察重點:</b> 點「回首頁」和「重新載入本頁」時,注意瀏覽器網址列——
+      域名應該<b>一直是你的加速域名</b>,不會變成 github.io。
+      若變成 github.io,代表連結被寫成了絕對網址(寫死域名),要改回相對路徑。
+      另外 F12 → Network 看這兩頁的 <b>X-Cache</b>,第二次載入應該是 HIT。
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('host').textContent = location.host || '(本機檔案)';
+    document.getElementById('path').textContent = location.pathname || '/';
+    document.getElementById('loadtime').textContent = new Date().toLocaleString('zh-TW');
+  </script>
+</body>
+</html>
